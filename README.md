@@ -64,6 +64,8 @@ The system utilizes the Zynq's Generic Interrupt Controller (GIC) to handle asyn
 *   **AXI SPI Master**
 *   **GPIO Buttons**
 
+Below is the AXI Adress map of the peripherals.
+
 ![System Block Design](fpga/block_design_system/block_design_axi_address_map.png)
 
 ### Software Architecture (FreeRTOS)
