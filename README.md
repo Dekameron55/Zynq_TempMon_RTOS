@@ -98,7 +98,7 @@ The system displays the temperature and humidity from the HDC1080 sensor, the nu
 *Figure 4: Setup Normal Mode of operation of the application.*
 
 **Interrupt Handling:**
-*   **Buttons:** Triggers an ISR on the GIC. The ISR provides immediate visual feedback by toggling the corresponding LED, then disables interrupts and defers processing to a software timer for debouncing. Once the signal is stable, the timer callback increments the press counter and sends a `DisplayMessage_t` to the queue. Upon receiving this message, the display task shows a "BUTTON PRESSED!" notification for 600 ms to provide clear visual confirmation to the user, as shown below.
+*   **Buttons:** Triggers an ISR on the GIC. The ISR provides immediate visual feedback by toggling the corresponding LED, then disables interrupts and defers processing to a software timer for debouncing. Once the signal is stable, the timer callback (`vButtonTimerCallback`) increments the press counter and sends a `DisplayMessage_t` to the queue. Upon receiving this message, the display task shows a "BUTTON PRESSED!" notification for 600 ms to provide clear visual confirmation to the user, as shown below.
 
 
 
@@ -340,8 +340,8 @@ static void SpiTestLoop(void)
 
         // Assert Chip Select (Active Low)
         SPI_Master_SetCS(&spi_inst, 0);
-        /* Note: printf takes ~1-2ms, dominating the 20us delay */
-        xil_printf("Sent: %02X %02X %02X %02X\r\n", buf[0], buf[1], buf[2], buf[3]);
+        /* Note: printf takes ~1-2ms, dominating the 20us delay For additional debugging of setup before measurement.*/
+        //xil_printf("Sent: %02X %02X %02X %02X\r\n", buf[0], buf[1], buf[2], buf[3]);
 
         for (int i = 0; i < 4; i++) buf[i]++;
 
