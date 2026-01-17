@@ -67,6 +67,7 @@ The system utilizes the Zynq's Generic Interrupt Controller (GIC) to handle asyn
 Below is the AXI Adress map of the peripherals.
 
 ![System Block Design](fpga/block_design_system/block_design_axi_address_map.png)
+*Figure 2: Vivado Block Design AXI BUS Address map of peripherals.*
 
 ### Software Architecture (FreeRTOS)
 
@@ -94,7 +95,7 @@ The system displays the temperature and humidity from the HDC1080 sensor, the nu
 
 
 ![Interrupt](images/Setup_operation.jpg)
-
+*Figure 3: Setup Normal Mode of operation of the application.*
 
 **Interrupt Handling:**
 *   **Buttons:** Triggers an ISR on the GIC. Each button press increments a counter and toggles the corresponding LED within the ISR for immediate feedback. A software-based debouncing mechanism handles noisy signals. Additionally, the `ButtonHandler` sends a `DisplayMessage_t` item to the queue to update the display. Upon receiving this message, the display task shows a "BUTTON PRESSED!" notification for 600 ms to provide clear visual confirmation to the user, as shown below.
@@ -102,6 +103,7 @@ The system displays the temperature and humidity from the HDC1080 sensor, the nu
 
 
 ![Interrupt](images/Setup_button_pressed.jpg)
+*Figure 4: Setup Interrupt Mode of operation of the application. Button press triggers an ISR.*
 
 
 ---
@@ -246,6 +248,7 @@ Test Passed: RX FIFO is empty as expected.
 ```
 
 ![RTL Waveform](images/rtl_tb.png)
+*Figure 5: RTL Waveform view of the SPI Master core with GTKWave.*
 
 #### Level 2: AXI Integration Verification
 Once the core was verified, the AXI4-Lite interface was integrated. The full IP was verified in the Vivado environment using the **Xilinx AXI Verification IP (VIP)** configured in Master Manual mode.
@@ -255,6 +258,7 @@ Once the core was verified, the AXI4-Lite interface was integrated. The full IP 
 
 
 ![!AXI Verification Block Design](images/spi_fpga_axi_tb_block_design.png)
+*Figure 6: Vivado Custom SPI AXI Module verification block design with AXI VIP Master.*
 
 **Vivado Simulation Output:**
 ```text
@@ -281,6 +285,7 @@ IP Version: 0x00010300
 ---------------------------------------------------
 ```
 ![!AXI Verification sim Design](images/spi_fpga_axi_tb_sim.png)
+*Figure 7: Vivado AXI VIP Simmulation and verification waveform output.*
 
 
 #### Level 3: Physical level Verification
@@ -346,9 +351,11 @@ static void SpiTestLoop(void)
 ```
 Below waveform showcases that the SCK speed has been set succesfully.
 ![!Correct SCK](images/spi_waveform.png)
+*Figure 8: Physical SPI Bus waveform output. SPI Clock speed verification.*
 
 Below waveform showcases a whole SPI Transfer.
 ![!Correct SCK](images/spi_transfer.png)
+*Figure 9: Physical SPI Bus waveform output. Whole SPI Transfer.*
 
 
 

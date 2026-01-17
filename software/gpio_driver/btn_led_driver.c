@@ -1,15 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2026
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* Copyright (C) 2025
 *
 ******************************************************************************/
 
@@ -53,6 +44,10 @@ void BtnLed_SetHandler(BtnLed_Driver *InstancePtr, BtnLed_Handler FuncPtr, void 
 void BtnLed_EnableInterrupts(BtnLed_Driver *InstancePtr) {
     XGpio_InterruptEnable(&InstancePtr->Gpio, XGPIO_IR_CH1_MASK);
     XGpio_InterruptGlobalEnable(&InstancePtr->Gpio);
+}
+
+void BtnLed_DisableInterrupts(BtnLed_Driver *InstancePtr) {
+    XGpio_InterruptDisable(&InstancePtr->Gpio, XGPIO_IR_CH1_MASK);
 }
 
 void BtnLed_IntrHandler(void *InstancePtr) {

@@ -1,18 +1,3 @@
-/******************************************************************************
-*
-* Copyright (C) 2026
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-*
-******************************************************************************/
-
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
@@ -50,10 +35,12 @@ static SPI_Master_Driver spi_inst;
 static I2C_AXI_Master_Driver i2c_inst;
 static GPIO_Driver gpio_inst;
 static TimerHandle_t xButtonTimer = NULL;
+static uint32_t PressCount = 0;
 extern XScuGic xInterruptController;
 volatile int transaction_complete;
 volatile int transaction_error;
 volatile int spi_transaction_complete;
+static volatile int ButtonPressed = 0;
 
 /*-----------------------------------------------------------*/
 /* Button callback (safe to call FreeRTOS API) */
@@ -61,22 +48,11 @@ volatile int spi_transaction_complete;
 static void ButtonHandler(void *CallBackRef, u32 ButtonState)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    static uint32_t PressCount = 0;
 
     // 1. Disable Interrupts immediately to ignore subsequent bounces
-    // BtnLed_DisableInterrupts(&btn_led_inst);
+    BtnLed_DisableInterrupts(&btn_led_inst);
 
-    // 2. Check if this is a PRESS (non-zero) or a RELEASE/BOUNCE (zero)
-    // Only process if a button is actually held down.
-    if (ButtonState & 0x0F) {
-        PressCount++;
-        DisplayMessage_t msg;
-        msg.type = MSG_TYPE_BUTTON;
-        msg.payload.button_count = PressCount;
-        xQueueSendFromISR(xDisplayQueue, &msg, &xHigherPriorityTaskWoken);
-    }
-
-    // 3. Start a timer to check for release (Debounce/Hold handling)
+    // 2. Start a timer to check for stable state (Debounce)
     if (xButtonTimer != NULL) {
         xTimerStartFromISR(xButtonTimer, &xHigherPriorityTaskWoken);
     }
@@ -91,10 +67,21 @@ static void vButtonTimerCallback(TimerHandle_t xTimer)
     u32 buttons = XGpio_DiscreteRead(&btn_led_inst.Gpio, 1);
 
     if (buttons & 0x0F) {
+        // Button is pressed
+        if (!ButtonPressed) {
+            ButtonPressed = 1;
+            PressCount++;
+            DisplayMessage_t msg;
+            msg.type = MSG_TYPE_BUTTON;
+            msg.payload.button_count = PressCount;
+            xQueueSend(xDisplayQueue, &msg, 0);
+        }
         // Button is still held down. Restart timer to check again later.
-        xTimerStart(xTimer, pdMS_TO_TICKS(50));
+        xTimerReset(xTimer, 0);
     } else {
         // Button released. Clear any latched interrupts from release bounce and re-enable.
+        ButtonPressed = 0;
+        btn_led_inst.LastButtons = 0;
         XGpio_InterruptClear(&btn_led_inst.Gpio, XGPIO_IR_CH1_MASK);
         BtnLed_EnableInterrupts(&btn_led_inst);
     }
@@ -107,12 +94,20 @@ static void SetupInterruptSystem(BtnLed_Driver *BtnLedInstancePtr)
     XScuGic_Config *IntcConfig;
 
     // 1. Lookup Config
+    // We need this to ensure the driver struct is populated, even if we don't call CfgInitialize
     IntcConfig = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
     configASSERT(IntcConfig != NULL);
 
-    // 2. CfgInitialize 
+    // 2. CfgInitialize - SKIPPED
+    // In FreeRTOS, the kernel initializes the GIC. Calling this again resets the hardware
+    // and stops the Tick Timer, freezing the system.
+    
+    // WORKAROUND: Manually set IsReady and Config so driver API works
     xInterruptController.IsReady = XIL_COMPONENT_IS_READY;
     xInterruptController.Config = IntcConfig;
+
+    // 3. Exception Handler - SKIPPED
+    // FreeRTOS owns the exception table.
 
     // 4. Set Priority and Trigger Type
     // Priority: 0xA0 (Safe for FreeRTOS). Trigger: 0x1 (High Level).
@@ -252,6 +247,7 @@ int main()
     GPIO_Init(&gpio_inst, XPAR_AXI_GPIO_0_DEVICE_ID);
     GPIO_SetPin(&gpio_inst, GPIO_PIN_VDDC|GPIO_PIN_VBATC, 1);
 
+    // Setup interrupts safely
     // Create tasks
     xTaskCreate(I2cTempMeasure_Task,"Temp",configMINIMAL_STACK_SIZE*4,NULL,2,NULL);
     xTaskCreate(TickGenerator_Task,"Tick",configMINIMAL_STACK_SIZE*2,NULL,2,NULL);
