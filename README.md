@@ -98,7 +98,7 @@ The system displays the temperature and humidity from the HDC1080 sensor, the nu
 *Figure 4: Setup Normal Mode of operation of the application.*
 
 **Interrupt Handling:**
-*   **Buttons:** Triggers an ISR on the GIC. Each button press increments a counter and toggles the corresponding LED within the ISR for immediate feedback. A software-based debouncing mechanism handles noisy signals. Additionally, the `vButtonTimerCallback` (invoked from the `ButtonHandler`) sends a `DisplayMessage_t` item to the queue to update the display. Upon receiving this message, the display task shows a "BUTTON PRESSED!" notification for 600 ms to provide clear visual confirmation to the user, as shown below.
+*   **Buttons:** Triggers an ISR on the GIC. The ISR provides immediate visual feedback by toggling the corresponding LED, then disables interrupts and defers processing to a software timer for debouncing. Once the signal is stable, the timer callback increments the press counter and sends a `DisplayMessage_t` to the queue. Upon receiving this message, the display task shows a "BUTTON PRESSED!" notification for 600 ms to provide clear visual confirmation to the user, as shown below.
 
 
 
