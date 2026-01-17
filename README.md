@@ -3,7 +3,7 @@
 This project demonstrates a complete real-time embedded system on the Zynq-7000 platform (PYNQ-Z2). It integrates a **FreeRTOS** application running on the Processing System (PS) with custom, synthesizable **AXI4-Lite IP Cores** implemented in the Programmable Logic (PL) to interface with external sensors and displays.
 
 ![ProjectDemo](images/Setup_title.jpg)
-
+*Figure 1: Project showcase.*
 ## Project Overview
 
 The system reads temperature and humidity data from an **HDC1080** sensor via a custom I2C Master IP, processes user input from buttons via interrupts, and visualizes the system state on a **Pmod OLED** (SSD1306) display driven by a custom SPI Master IP.
@@ -30,14 +30,14 @@ Zynq_TempMon_RTOS/
 │   ├── spi_fpga_axi_tb/        # Vivado test bench simulation (AXI VIP).
 │   ├── spi_rtl_tb/             # Testbench for pure RTL simulation (SPI).
 │   └── spi_rtl/                # Verilog source files for SPI IP core.
-└── software/
-    ├── freertos_main.c     # Main FreeRTOS Application.
-    ├── gpio_driver/        # Drivers for Buttons, LEDs, OLED GPIOs.
-    ├── hdc1080/            # HDC1080 Sensor Driver.
-    ├── i2c_axi_master/     # Custom I2C Master Driver.
-    ├── oled_driver/        # SSD1306 OLED Driver.
-    └── spi_axi_master/     # Custom SPI Master Driver.
-└── software_test/
+├── software/
+│   ├── freertos_main.c     # Main FreeRTOS Application.
+│   ├── gpio_driver/        # Drivers for Buttons, LEDs, OLED GPIOs.
+│   ├── hdc1080/            # HDC1080 Sensor Driver.
+│   ├── i2c_axi_master/     # Custom I2C Master Driver.
+│   ├── oled_driver/        # SSD1306 OLED Driver.
+│   └── spi_axi_master/     # Custom SPI Master Driver.
+├── software_test/
     ├── main_tst.c          # Bare-Metal software tests of the peripherals.
 
 ```
@@ -49,7 +49,7 @@ Zynq_TempMon_RTOS/
 The design partitions the workload between the PS and PL. The PL handles the strict timing requirements of the communication protocols (I2C/SPI), while the PS handles the application logic and scheduling.
 
 ![System Block Design](fpga/block_design_system/block_design.png)
-*Figure 1: Vivado Block Design showing the Zynq PS connected to custom AXI I2C, AXI SPI, and AXI GPIO peripherals.*
+*Figure 2: Vivado Block Design showing the Zynq PS connected to custom AXI I2C, AXI SPI, and AXI GPIO peripherals.*
 
 The design partitions the workload between the PS and PL. The PL handles the strict timing requirements of the communication protocols (I2C/SPI), while the PS handles the application logic and scheduling.
 
@@ -67,7 +67,7 @@ The system utilizes the Zynq's Generic Interrupt Controller (GIC) to handle asyn
 Below is the AXI Adress map of the peripherals.
 
 ![System Block Design](fpga/block_design_system/block_design_axi_address_map.png)
-*Figure 2: Vivado Block Design AXI BUS Address map of peripherals.*
+*Figure 3: Vivado Block Design AXI BUS Address map of peripherals.*
 
 ### Software Architecture (FreeRTOS)
 
@@ -95,7 +95,7 @@ The system displays the temperature and humidity from the HDC1080 sensor, the nu
 
 
 ![Interrupt](images/Setup_operation.jpg)
-*Figure 3: Setup Normal Mode of operation of the application.*
+*Figure 4: Setup Normal Mode of operation of the application.*
 
 **Interrupt Handling:**
 *   **Buttons:** Triggers an ISR on the GIC. Each button press increments a counter and toggles the corresponding LED within the ISR for immediate feedback. A software-based debouncing mechanism handles noisy signals. Additionally, the `ButtonHandler` sends a `DisplayMessage_t` item to the queue to update the display. Upon receiving this message, the display task shows a "BUTTON PRESSED!" notification for 600 ms to provide clear visual confirmation to the user, as shown below.
@@ -103,7 +103,7 @@ The system displays the temperature and humidity from the HDC1080 sensor, the nu
 
 
 ![Interrupt](images/Setup_button_pressed.jpg)
-*Figure 4: Setup Interrupt Mode of operation of the application. Button press triggers an ISR.*
+*Figure 5: Setup Interrupt Mode of operation of the application. Button press triggers an ISR.*
 
 
 ---
@@ -248,7 +248,7 @@ Test Passed: RX FIFO is empty as expected.
 ```
 
 ![RTL Waveform](images/rtl_tb.png)
-*Figure 5: RTL Waveform view of the SPI Master core with GTKWave.*
+*Figure 6: RTL Waveform view of the SPI Master core with GTKWave.*
 
 #### Level 2: AXI Integration Verification
 Once the core was verified, the AXI4-Lite interface was integrated. The full IP was verified in the Vivado environment using the **Xilinx AXI Verification IP (VIP)** configured in Master Manual mode.
@@ -258,7 +258,7 @@ Once the core was verified, the AXI4-Lite interface was integrated. The full IP 
 
 
 ![!AXI Verification Block Design](images/spi_fpga_axi_tb_block_design.png)
-*Figure 6: Vivado Custom SPI AXI Module verification block design with AXI VIP Master.*
+*Figure 7: Vivado Custom SPI AXI Module verification block design with AXI VIP Master.*
 
 **Vivado Simulation Output:**
 ```text
@@ -285,7 +285,7 @@ IP Version: 0x00010300
 ---------------------------------------------------
 ```
 ![!AXI Verification sim Design](images/spi_fpga_axi_tb_sim.png)
-*Figure 7: Vivado AXI VIP Simmulation and verification waveform output.*
+*Figure 8: Vivado AXI VIP Simmulation and verification waveform output.*
 
 
 #### Level 3: Physical level Verification
@@ -351,11 +351,11 @@ static void SpiTestLoop(void)
 ```
 Below waveform showcases that the SCK speed has been set succesfully.
 ![!Correct SCK](images/spi_waveform.png)
-*Figure 8: Physical SPI Bus waveform output. SPI Clock speed verification.*
+*Figure 9: Physical SPI Bus waveform output. SPI Clock speed verification.*
 
 Below waveform showcases a whole SPI Transfer.
 ![!Correct SCK](images/spi_transfer.png)
-*Figure 9: Physical SPI Bus waveform output. Whole SPI Transfer.*
+*Figure 10: Physical SPI Bus waveform output. Whole SPI Transfer.*
 
 
 
