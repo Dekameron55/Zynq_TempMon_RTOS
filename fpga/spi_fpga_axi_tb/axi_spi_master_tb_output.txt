@@ -1,0 +1,31 @@
+Built simulation snapshot axi_spi_master_tb_behav
+run_program: Time (s): cpu = 00:00:01 ; elapsed = 00:00:18 . Memory (MB): peak = 1678.004 ; gain = 0.000
+INFO: [USF-XSim-69] 'elaborate' step finished in '19' seconds
+launch_simulation: Time (s): cpu = 00:00:01 ; elapsed = 00:00:19 . Memory (MB): peak = 1678.004 ; gain = 0.000
+INFO: [Wavedata 42-565] Reading protoinst file protoinst_files/design_1.protoinst
+INFO: [Wavedata 42-564]   Found protocol instance at /axi_spi_master_tb/DUT/design_1_i//axi_spi_master_0/S_AXI
+INFO: [Wavedata 42-564]   Found protocol instance at /axi_spi_master_tb/DUT/design_1_i//axi_vip_0/M_AXI
+Time resolution is 1 ps
+XilinxAXIVIP: Found at Path: axi_spi_master_tb.DUT.design_1_i.axi_vip_0.inst
+[0 ns] Resetting System...
+[400 ns] Checking IP Version...
+IP Version: 0x00010300
+[435 ns] Configuring SPI Master...
+[705 ns] Starting First Loopback Test (4 Bytes)...
+relaunch_sim: Time (s): cpu = 00:00:02 ; elapsed = 00:00:23 . Memory (MB): peak = 1678.004 ; gain = 0.000
+run all
+[1245 ns] Waiting for Interrupt...
+[4055 ns] Interrupt Asserted.
+[4315 ns] Received Correct Data: 0x000000de
+[4405 ns] Received Correct Data: 0x000000ad
+[4495 ns] Received Correct Data: 0x000000be
+[4585 ns] Received Correct Data: 0x000000ef
+[4625 ns] First exchange successful.
+[4825 ns] Starting Second Loopback Test (2 Bytes)...
+[5175 ns] Waiting for Interrupt...
+[6585 ns] Interrupt Asserted.
+[6845 ns] Received Correct Data: 0x00000012
+[6935 ns] Received Correct Data: 0x00000034
+---------------------------------------------------
+   TEST PASSED: AXI SPI Master Loopback Successful 
+---------------------------------------------------

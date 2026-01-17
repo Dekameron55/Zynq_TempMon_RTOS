@@ -1,0 +1,11 @@
+iverilog -o design_core .\SPI_Master_FIFO_Top_tb.sv .\SPI_Master_FIFO_Top.v .\spi_master_core.v
+vvp .\design_core
+VCD info: dumpfile dump_top.vcd opened for output.
+Test Started: Filling TX FIFO with 4 bytes
+Transmission should be complete. Checking RX FIFO...
+Success: Received 0xa1
+Success: Received 0xb2
+Success: Received 0xc3
+Success: Received 0xd4
+Test Passed: RX FIFO is empty as expected.
+.\SPI_Master_FIFO_Top_tb.sv:104: $finish called at 5346000 (1ps)
